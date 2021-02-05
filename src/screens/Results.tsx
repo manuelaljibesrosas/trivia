@@ -1,5 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+// components
+import { Link } from 'react-router-dom';
 
 const ResultItem = () => (
   <div
@@ -29,8 +31,9 @@ const ResultItem = () => (
   </div>
 );
 
-const PlayAgainButton = () => (
+const PlayAgainButton = ({ onClick }) => (
   <div
+    onClick={onClick}
     css={css`
       cursor: pointer;
       position: fixed;
@@ -114,7 +117,9 @@ const Results = () => (
       <ResultItem />
       <ResultItem />
     </ul>
-    <PlayAgainButton />
+    <Link to="/" component={({ navigate }) => (
+      <PlayAgainButton onClick={navigate} />
+    )} />
   </div>
 );
 

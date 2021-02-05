@@ -1,5 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+// components
+import { Link } from 'react-router-dom';
 
 const Timer = () => (
   <div
@@ -37,8 +39,9 @@ const Timer = () => (
   </div>
 );
 
-const QuestionOption = ({ label, checked }) => (
+const QuestionOption = ({ label, checked, onClick }) => (
   <div
+    onClick={onClick}
     css={css`
       cursor: pointer;
       margin-bottom: 9px;
@@ -154,8 +157,18 @@ const Question = () => (
           overflow-y: auto;
         `}
       >
-        <QuestionOption label="True" checked />
-        <QuestionOption label="False" />
+        <Link
+          to="/results"
+          component={({ navigate }) => (
+            <QuestionOption label="True" checked onClick={navigate} />
+          )}
+        />
+        <Link
+          to="/results"
+          component={({ navigate }) => (
+            <QuestionOption label="False" onClick={navigate} />
+          )}
+        />
       </div>
     </div>
   </div>

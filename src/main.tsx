@@ -2,6 +2,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 // components
+import { MemoryRouter, Switch, Route } from 'react-router-dom';
 import { Global, css, jsx } from '@emotion/react';
 import Intro from './screens/Intro';
 import Question from './screens/Question';
@@ -43,7 +44,19 @@ render(
         height: 100%;
       `}
     >
-      <Question />
+      <MemoryRouter>
+        <Switch>
+          <Route exact path="/">
+            <Intro />
+          </Route>
+          <Route path="/game">
+            <Question />
+          </Route>
+          <Route path="/results">
+            <Results />
+          </Route>
+        </Switch>
+      </MemoryRouter>
     </div>
   </React.Fragment>,
   document.getElementById('root'),
