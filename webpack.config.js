@@ -24,6 +24,9 @@ module.exports = {
             '@babel/preset-react',
             '@babel/preset-typescript',
           ],
+          plugins: [
+            '@babel/proposal-class-properties',
+          ],
         },
         exclude: /node_modules/,
       },

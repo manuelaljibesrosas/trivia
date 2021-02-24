@@ -1,0 +1,3 @@
+API requests are carried out using an algorithm which will make sure that the list consists of questions less than 80 characters long, we use session tokens to make sure that the player doesn't get the same question twice during a session, we also omit the difficulty constraint as it doesn't accurately reflect the difficulty of the questions retrieved and it reduces the pool of questions available
+
+Each directory has its own README.md

@@ -1,18 +1,23 @@
 /** @jsx jsx */
 import React from 'react';
 import { render } from 'react-dom';
+import 'regenerator-runtime/runtime';
+import { history, routes } from './shared/router';
+import store from './state/store';
+import './shared/confetti';
 // components
-import { MemoryRouter, Switch, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { Router, Switch, Route } from 'react-router-dom';
 import { Global, css, jsx } from '@emotion/react';
 import Intro from './screens/Intro';
-import Question from './screens/Question';
+import Trivia from './screens/Trivia';
 import Results from './screens/Results';
 // assets
 import FredokaOne from './assets/fonts/Fredoka_One/FredokaOne-Regular.ttf';
 import VarelaRound from './assets/fonts/Varela_Round/VarelaRound-Regular.ttf';
 
 render(
-  <React.Fragment>
+  <React.StrictMode>
     <Global
       styles={css`
         @font-face {
@@ -33,31 +38,33 @@ render(
         }
       `}
     />
-    <div
-      css={css`
-        // we use this instead of the idiomatic
-        // vh and vw units because those have
-        // problems with the browser's url bar
-        // on mobile
-        position: fixed;
-        width: 100%;
-        height: 100%;
-      `}
-    >
-      <MemoryRouter>
-        <Switch>
-          <Route exact path="/">
-            <Intro />
-          </Route>
-          <Route path="/game">
-            <Question />
-          </Route>
-          <Route path="/results">
-            <Results />
-          </Route>
-        </Switch>
-      </MemoryRouter>
-    </div>
-  </React.Fragment>,
+    <Provider store={store}>
+      <div
+        css={css`
+          // we use this instead of the idiomatic
+          // vh and vw units because those have
+          // problems with the browser's url bar
+          // on mobile
+          position: fixed;
+          width: 100%;
+          height: 100%;
+        `}
+      >
+        <Router history={history}>
+          <Switch>
+            <Route exact path={routes.INTRO}>
+              <Intro />
+            </Route>
+            <Route path={routes.GAME}>
+              <Trivia />
+            </Route>
+            <Route path={routes.RESULTS}>
+              <Results />
+            </Route>
+          </Switch>
+        </Router>
+      </div>
+    </Provider>
+  </React.StrictMode>,
   document.getElementById('root'),
 );
