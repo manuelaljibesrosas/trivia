@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "es2019.Array", "DOM"],
+    "noEmit": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "assets/*": ["src/assets/*"],
+      "components/*": ["src/components/*"],
+      "screens/*": ["src/screens/*"],
+      "shared/*": ["src/shared/*"],
+      "state/*": ["src/state/*"],
+      "types/*": ["src/types/*"]
+    }
+  },
+  "files": ["src/main.tsx"],
+  "include": ["typings.d.ts"],
+  "exclude": ["node_modules"]
+}

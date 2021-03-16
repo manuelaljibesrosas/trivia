@@ -1,103 +1,94 @@
 /** @jsx jsx */
-import React from 'react';
 import { jsx, css } from '@emotion/react';
+import React from 'react';
+import { connect } from 'react-redux';
 import {
   unit,
   mergeAll,
   sequence,
   interpolate,
   easings,
+  directions,
   run,
 } from 'tween-fn';
 import { routes, history } from '../shared/router';
+import { RootState } from 'state/store';
+// selectors
+import { selectResults } from 'state/game/selectors';
+// actions
+import { questions } from 'state/resources/questions/actions';
+// components
+import ResultItem from 'components/ResultItem';
+import PlayAgainButton from 'components/PlayAgainButton';
 
-const ResultItem = React.forwardRef((_, ref) => (
-  <div
-    ref={ref}
-    css={css`
-      margin-bottom: 10px;
-      min-height: 64px;
-      display: flex;
-      align-items: center;
-      padding: 15px 16px;
-      font: 400 14px/1.45 'VarelaRound', sans-serif;
-      background-color: #c1c1c159;
-      border-radius: 5px;
-      color: #fff;
-      opacity: 0;
-    `}
-  >
-    <svg
-      css={css`
-        margin-right: 10px;
-        width: 30px;
-        height: 30px;
-      `}
-      width="15"
-      height="15"
-      viewBox="0 0 15 15"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M0.75 9.25L4.25 12.75L13.25 1.25" stroke="#2BDE88" strokeWidth="2"/>
-    </svg>
-    <div>{'Japan was part of the allied powers during World War I.'}</div>
-  </div>
-));
+const mapStateToProps = (s: RootState) => ({
+  results: selectResults(s),
+});
+const dispatchProps = {
+  request: questions.request,
+};
 
-const PlayAgainButton = ({ onClick }) => (
-  <div
-    onClick={onClick}
-    css={css`
-      cursor: pointer;
-      position: fixed;
-      bottom: 16px;
-      // subtract 10px padding from each side
-      width: calc(100% - 20px);
-      height: 45px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font: 400 14px/1 VarelaRound;
-      text-transform: uppercase;
-      background-color: #ec0eae;
-      border-radius: 8px;
-      color: #fff;
-    `}
-  >{'play again'}</div>
-);
+type Props = ReturnType<typeof mapStateToProps> & typeof dispatchProps;
 
-class Results extends React.Component {
-  constructor(props) {
+class Results extends React.Component<Props> {
+  playAgainButtonRef = React.createRef<HTMLDivElement>();
+  scoreRef = React.createRef<HTMLDivElement>();
+  overlayRef = React.createRef<HTMLDivElement>();
+  confettiRootRef = React.createRef<HTMLCanvasElement>();
+  score = 0;
+  answerRefs: Array<React.RefObject<HTMLDivElement>> = [];
+  answers: Array<React.ReactElement> = [];
+
+  constructor(props: Props) {
     super(props);
 
-    this.scoreRef = React.createRef();
-    this.overlayRef = React.createRef();
-    this.confettiRootRef = React.createRef();
-
-    this.answerRefs = [];
-    this.answers = new Array();
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < this.props.results.length; i++) {
       this.answerRefs[i] = React.createRef();
+    }
+    this.answers = this.props.results.map((result, i) => {
+      const [question, answer] = result;
+      const correct = question.correct_answer === answer;
 
-      this.answers.push(<ResultItem key={`answer-${i}`} ref={this.answerRefs[i]} />);
-    };
+      if (correct) this.score++;
+      
+      return (
+        <ResultItem
+          key={`answer-${i}`}
+          ref={this.answerRefs[i]}
+          question={question.question}
+          answer={question.correct_answer}
+          correct={correct}
+        />
+      );
+    });
 
     this.intro = this.intro.bind(this);
+    this.playAgainButtonPulse = this.playAgainButtonPulse.bind(this);
     this.outro = this.outro.bind(this);
   }
 
   intro() {
+    const overlay = (this.overlayRef.current as HTMLDivElement);
+    const score = (this.scoreRef.current as HTMLDivElement);
     const seq = sequence([
-      unit({ begin: () => confetti.start(this.confettiRootRef.current) }),
+      unit({
+        begin: () => {
+          (window as any).confetti.start(this.confettiRootRef.current, null, null, 50);
+        },
+      }),
+      unit({
+        delay: 600,
+        duration: 200,
+        ease: easings.SQUARED,
+        change: (y: number) =>  {
+          overlay.style.opacity = String(interpolate(y, 1, 0));
+        },
+      }),
       unit({
         duration: 500,
         ease: easings.SQUARED,
-        update: (y) => {
-          this.scoreRef.current.style.opacity = y;
-        },
-        complete: (y) => {
-          this.scoreRef.current.style.opacity = y;
+        change: (y: number) => {
+          score.style.opacity = String(y);
         },
       }),
       unit({ delay: 300 }),
@@ -105,13 +96,10 @@ class Results extends React.Component {
         delay: i * 150,
         duration: 800,
         ease: easings.EASE_OUT_QUINT,
-        update: (y) => {
-          answer.style.opacity = y;
-          answer.style.transform = `translateX(${interpolate(y, 50, 0)}px)`;
-        },
-        complete: (y) => {
-          answer.style.opacity = y;
-          answer.style.transform = `translateX(${interpolate(y, 50, 0)}px)`;
+        change: (y: number) => {
+          (answer as HTMLDivElement).style.opacity = String(y);
+          (answer as HTMLDivElement).style.transform =
+            `translateX(${interpolate(y, 50, 0)}px)`;
         },
       }))),
     ]);
@@ -119,21 +107,19 @@ class Results extends React.Component {
   }
 
   outro() {
+    const overlay = (this.overlayRef.current as HTMLDivElement);
     const seq = sequence([
       unit({
         duration: 300,
-        begin: confetti.stop(),
-        update: (y) => {
-          this.overlayRef.current.style.opacity = y;
-        },
-        complete: (y) => {
-          this.overlayRef.current.style.opacity = y;
+        begin: (window as any).confetti.stop(),
+        change: (y: number) => {
+          overlay.style.opacity = String(y);
         },
       }),
       unit({
         delay: 1000,
         begin: () => {
-          confetti.remove();
+          (window as any).confetti.remove();
           history.push(routes.GAME);
         },
       }),
@@ -141,8 +127,29 @@ class Results extends React.Component {
     run(seq);
   }
 
+  // TODO: move this inside the definition of PlayAgainButton
+  playAgainButtonPulse() {
+    const button = (this.playAgainButtonRef.current as HTMLDivElement);
+    const seq = sequence([
+      unit({
+        duration: 500,
+        iterations: Infinity,
+        ease: easings.SQUARED,
+        direction: directions.ALTERNATE,
+        update: (y: number) => {
+          button.style.transform = `scale(${interpolate(y, 1, 1.02)})`;
+        },
+      }),
+    ]);
+    run(seq);
+  }
+
   componentDidMount() {
+    this.playAgainButtonPulse();
     this.intro();
+    // preemptively request new questions in case
+    // the player decides to play another round
+    this.props.request();
   }
 
   render() {
@@ -151,18 +158,19 @@ class Results extends React.Component {
       <React.Fragment>
         <div ref={this.overlayRef} css={css`
           pointer-events: none;
-          z-index: 2;
+          z-index: 3;
           position: fixed;
           top: 0;
           left: 0;
           height: 100%;
           width: 100%;
           background-color: #000620;
-          opacity: 0;
+          opacity: 1;
         `} />
         <canvas ref={this.confettiRootRef} />
         <div
           css={css`
+            height: 100%;
             padding: 0 10px;
             background-color: #0a1a61;
           `}
@@ -181,7 +189,7 @@ class Results extends React.Component {
           <div
             css={css`
               position: relative;
-              height: 120px;
+              height: 110px;
             `}
           >
             <div ref={this.scoreRef} css={css`
@@ -206,22 +214,26 @@ class Results extends React.Component {
                 css={css`
                   font: 700 64px/1 Roboto, sans-serif;
                 `}
-              >{'7/10'}</h2>
+              >{`${this.score}/10`}</h2>
             </div>
           </div>
           <div
             css={css`
-              // we subtract the space taken by the score section
-              height: calc(100% - 130px);
+              height: calc(100% - 110px);
+              padding-bottom: 60px;
+              overflow-y: scroll;
             `}
           >
             {this.answers}
           </div>
-          <PlayAgainButton onClick={this.outro} />
+          <PlayAgainButton
+            ref={this.playAgainButtonRef}
+            onClick={this.outro}
+          />
         </div>
       </React.Fragment>
     );
   }
 }
 
-export default Results;
+export default connect(mapStateToProps, dispatchProps)(Results);

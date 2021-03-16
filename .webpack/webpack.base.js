@@ -1,17 +1,27 @@
 const { resolve } = require('path');
+const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const htmlWebpackTemplate = require('html-webpack-template');
 
 module.exports = {
-  mode: 'development',
-  entry: resolve(__dirname, 'src', 'main.tsx'),
+  mode: 'production',
+  entry: resolve(__dirname, '..', 'src', 'main.tsx'),
   output: {
     filename: '[name].js',
-    path: resolve(__dirname, 'dist'),
+    path: resolve(__dirname, '..', 'dist'),
   },
-  devtool: 'inline-source-map',
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: fs.readdirSync(
+      resolve(__dirname, '..', 'src'),
+      { withFileTypes: true },
+    )
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name)
+      .reduce((acc, cur) => {
+        acc[cur] = resolve(__dirname, '..', 'src', cur);
+        return acc;
+      }, {}),
   },
   module: {
     rules: [
@@ -40,7 +50,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: 'body',
       template: htmlWebpackTemplate,
-      title: require(resolve(__dirname, 'package.json')).name,
+      title: require(resolve(__dirname, '..', 'package.json')).name,
       meta: [
         {
           name: 'viewport',
@@ -59,9 +69,4 @@ module.exports = {
       `,
     }),
   ],
-  devServer: {
-    host: '0.0.0.0',
-    port: 8080,
-    publicPath: '/',
-  },
 };
