@@ -11,6 +11,7 @@ import {
   takeLast,
   tap,
 } from 'rxjs/operators';
+import DOMPurify from 'dompurify';
 import { Dependencies, RootState, RootAction } from 'state/store';
 import { REQUEST, questions } from './actions';
 import { NUMBER_OF_QUESTIONS_PER_SESSION, Question } from 'state/game/reducer';
@@ -75,7 +76,12 @@ export const fetchQuestionsEpic: Epic<RootAction, RootAction, RootState, Depende
       // emitted value from takeWhile
       takeLast(1),
       // store the index of each question inside the question itself
-      map((qs) => qs.map((q, index) => ({ ...q, index }))),
+      // and sanitize the HTML
+      map((qs) => qs.map((q, index) => ({
+        ...q,
+        index,
+        question: DOMPurify.sanitize(q.question),
+      }))),
       // map to a Redux action sequence
       mergeMap((qs) => from([
         enqueue(qs),
