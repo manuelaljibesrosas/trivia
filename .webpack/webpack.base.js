@@ -8,7 +8,7 @@ module.exports = {
   entry: resolve(__dirname, '..', 'src', 'main.tsx'),
   output: {
     filename: '[name].js',
-    path: resolve(__dirname, '..', 'dist'),
+    path: resolve(__dirname, '..', 'docs'),
   },
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
