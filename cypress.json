@@ -1,1 +1,6 @@
-{}
+{
+  "experimentalComponentTesting": true,
+  "componentFolder": "cypress/components",
+  "viewportWidth": 360,
+  "viewportHeight": 640
+}

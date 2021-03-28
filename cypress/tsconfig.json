@@ -2,7 +2,18 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress"]
+    "types": ["cypress", "node"],
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "assets/*": ["../src/assets/*"],
+      "components/*": ["../src/components/*"],
+      "screens/*": ["../src/screens/*"],
+      "shared/*": ["../src/shared/*"],
+      "state/*": ["../src/state/*"],
+      "types/*": ["../src/types/*"]
+    },
+    "jsx": "react"
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "**/*.tsx"]
 }
