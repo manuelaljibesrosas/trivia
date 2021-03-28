@@ -40,7 +40,7 @@
     "@types/chai": "^4.2.15",
     "@types/history": "^4.7.8",
     "@types/mocha": "^8.2.1",
-    "@types/node": "^14.14.34",
+    "@types/node": "^14.14.37",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.2",
     "@types/react-redux": "^7.1.16",
@@ -50,6 +50,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "compression-webpack-plugin": "^7.1.2",
     "cypress": "^6.8.0",
+    "cz-conventional-changelog": "^3.3.0",
     "html-webpack-plugin": "^5.0.0-beta.6",
     "html-webpack-template": "^6.2.0",
     "mocha": "^8.3.2",
@@ -61,5 +62,10 @@
     "webpack-cli": "^4.4.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
