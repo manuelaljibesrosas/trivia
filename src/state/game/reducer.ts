@@ -1,6 +1,7 @@
 import { createReducer } from 'redux-create-reducer';
 import { ActionType } from 'typesafe-actions';
 import * as gameActions from './actions';
+import * as globalActions from 'state/global/actions';
 
 export enum Answers {
   TRUE = 'True',
@@ -32,7 +33,7 @@ export interface State {
   answers: Array<[Question, Answers]>;
 }
 
-export type Actions = ActionType<typeof gameActions>
+export type Actions = ActionType<typeof gameActions & typeof globalActions>
 
 const initialState: State = {
   queue: [],
@@ -41,6 +42,7 @@ const initialState: State = {
 };
 
 export default createReducer<State, Actions>(initialState, {
+  [globalActions.RESET]: () => initialState,
   [gameActions.ENQUEUE]: (s: State, { payload: qs }) => ({
     ...s,
     queue: s.queue.concat(qs),
