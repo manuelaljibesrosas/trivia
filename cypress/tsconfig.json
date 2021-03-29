@@ -4,6 +4,8 @@
     "lib": ["es5", "dom"],
     "types": ["cypress", "node"],
     "esModuleInterop": true,
+    "jsx": "react",
+    "strict": true,
     "baseUrl": ".",
     "paths": {
       "assets/*": ["../src/assets/*"],
@@ -12,8 +14,7 @@
       "shared/*": ["../src/shared/*"],
       "state/*": ["../src/state/*"],
       "types/*": ["../src/types/*"]
-    },
-    "jsx": "react"
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }
