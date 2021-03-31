@@ -1,4 +1,4 @@
-module.exports = (on, config) => {
+module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions) => {
   // from the root of the project (folder with cypress.json file)
   config.env.webpackFilename = '.webpack/webpack.dev.js';
   // and disable code coverage
