@@ -229,7 +229,9 @@ class Results extends React.Component<Props> {
           <PlayAgainButton
             ref={this.playAgainButtonRef}
             onClick={this.outro}
-          />
+          >
+            {'Play Again'}
+          </PlayAgainButton>
         </div>
       </React.Fragment>
     );
