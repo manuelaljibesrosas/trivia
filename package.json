@@ -8,7 +8,8 @@
     "build": "npx webpack --config .webpack/webpack.prod.js",
     "analyze-bundle": "npx webpack --config .webpack/webpack.prod.js --analyze",
     "test": "ts-mocha --paths -p ./tsconfig.json '__tests__/**/*.ts'",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "cypress:open": "npx cypress open"
   },
   "keywords": [],
   "author": "Manuel Aljibes Rosas <manuelaljibesrosas@gmail.com>",
