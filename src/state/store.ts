@@ -6,6 +6,7 @@ import * as gameActions from './game/actions';
 import game from './game/reducer';
 import questionsReducer from './resources/questions/reducer';
 import { questions } from './resources/questions/actions';
+import * as globalActions from './global/actions';
 import questionsEpic from './resources/questions/epics';
 
 const rootReducer = combineReducers({
@@ -16,7 +17,7 @@ const rootReducer = combineReducers({
 });
 
 export type RootState = StateType<typeof rootReducer>;
-export type RootAction = ActionType<typeof questions & typeof gameActions>
+export type RootAction = ActionType<typeof questions & typeof gameActions & typeof globalActions>
 
 // TODO: checking for a property on window will break SSR
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
